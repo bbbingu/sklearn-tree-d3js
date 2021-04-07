@@ -162,6 +162,39 @@ d3.json(filetochoose, function(error, flare) {
 });
 
 d3.select(self.frameElement).style("height", "480px");
+    
+function wrap(text, width) {
+    text.each(function () {
+        var text = d3.select(this),
+            words = text.text().split(/\s+/).reverse(),
+            word,
+            line = [],
+            lineNumber = 0,
+            lineHeight = 1.1, // ems
+            x = text.attr("x"),
+            y = text.attr("y"),
+            dy = 0, //parseFloat(text.attr("dy")),
+            tspan = text.text(null)
+                        .append("tspan")
+                        .attr("x", x)
+                        .attr("y", y)
+                        .attr("dy", dy + "em");
+        while (word = words.pop()) {
+            line.push(word);
+            tspan.text(line.join(" "));
+            if (tspan.node().getComputedTextLength() > width) {
+                line.pop();
+                tspan.text(line.join(" "));
+                line = [word];
+                tspan = text.append("tspan")
+                            .attr("x", x)
+                            .attr("y", y)
+                            .attr("dy", ++lineNumber * lineHeight + dy + "em")
+                            .text(word);
+            }
+        }
+    });
+}
 
 function update(source,n_labels) {
 
@@ -209,9 +242,9 @@ function update(source,n_labels) {
 
   var rect = nodeEnter.append("rect")
       .attr("width", 170)
-      .attr("height", 70)
+      .attr("height", 90)
       .attr("x",-80)
-      .attr("y",-80)
+      .attr("y",-100)
       .attr("rx",6)
       .attr("ry",6)
       .style("fill",function(d){return  (d.children || d._children) || version2 ? "#f0f0f0" : "#ffffff"})
@@ -266,8 +299,8 @@ function update(source,n_labels) {
            if(((d.children || d._children) || version2) && d.name.match(/(.*?)(<|>|=|!=|<=|>=|=<|=>)/i)[1].length <= 11){
                return (d.children || d._children) || version2 ? -100 - ( ( getTextWidth(d.name.match(/(.*?)(<|>|=|!=|<=|>=|=<|=>)/i)[1],14,'Verdana')+20) - (133+8) ) / 1 : 0
            }
-           else return (d.children || d._children) || version2 ? -100 - ( ( getTextWidth(d.name.match(/(.*?)(<|>|=|!=|<=|>=|=<|=>)/i)[1].substring(0, 11),14,'Verdana')+5.7 ) - (133+8) ) / 2 : 0
-       }) 
+           else return (d.children || d._children) || version2 ? -95 - ( ( getTextWidth(d.name.match(/(.*?)(<|>|=|!=|<=|>=|=<|=>)/i)[1].substring(0, 11),14,'Verdana')+5.7 ) - (133+8) ) / 2 : 0
+       })  
       .attr("y",function(d){
           if(!d.name.match(/(.*?)(<|>|=|!=|<=|>=|=<|=>)/i)) return -68
           else return d.name.match(/(.*?)(<|>|=|!=|<=|>=|=<|=>)/i)[1] == 'Root '  ?  -55 : -65 
@@ -286,6 +319,7 @@ function update(source,n_labels) {
           }
           else  return  ""; 
         })
+        .call(wrap, 160)
         .append('svg:title')
         .text(function(d){
             return  (d.children || d._children) || version2 ?  d.name.match(/(.*?)(<|>|=|!=|<=|>=|=<|=>)/i)[1] : ""
@@ -294,9 +328,10 @@ function update(source,n_labels) {
 
 
 
+
       nodeEnter.append("text")
       .attr("x", function(d) { return (d.children || d._children) || version2 ? -75 - ( ( getTextWidth(d.name.replace(d.name.match(/(.*?)(<|>|=|!=|<=|>=|=<|=>)/i)[1],'').replace('=',''),14,'Verdana')+5.7 ) - (133+8) ) / 2 :0}) 
-      .attr("y",-45)
+      .attr("y",-40)
       .attr("dy", ".35em")
       .attr("text-anchor", "start" )
       .style("font-size","12px")
@@ -554,6 +589,7 @@ function update(source,n_labels) {
   nodeUpdate.select("text")
       .style("fill-opacity", 1);
 
+
   // Transition exiting nodes to the parent's new position.
   var nodeExit = node.exit().transition()
       .duration(duration)
@@ -565,6 +601,8 @@ function update(source,n_labels) {
 
   nodeExit.select("text")
       .style("fill-opacity", 1e-6);
+
+
 
   // Update the links…
   var link = svg.selectAll("path.link")
@@ -631,9 +669,10 @@ function update(source,n_labels) {
         .append('textPath')
         .attr("xlink:href", function(d) { return '#'+d.target.id; }) //place the ID of the path here
 	    .style("text-anchor","middle") //place the text halfway on the arc
-        .attr("startOffset", "45%")		
+        .attr("startOffset", "50%")		
         .text(function(d) {  return d.target.side == "left" ? "No" : "Yes" ; })
         .attr('visibility', function(d) {  return d.target.depth == 1 && !version2 ? 'visible' : 'hidden'})
+    
 
 
   tlink.exit().transition()
