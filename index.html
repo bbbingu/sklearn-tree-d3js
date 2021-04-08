@@ -270,19 +270,19 @@ function update(source,n_labels) {
           if(default_colors.length > 5){
               ttr = (40*default_colors.length)/2
           }
-          return (d.children || d._children) || version2 ? -75 - ( ( getTextWidth("Sample size: "+d.size+" or "+(d.size*100/TOTAL_SIZE).toFixed(0)+"%",10,'Verdana')+5.7 ) - (133+8) ) / 2 : ttr
+          return (d.children || d._children) || version2 ? -70 - ( ( getTextWidth("Sample size: "+d.size+" or "+(d.size*100/TOTAL_SIZE).toFixed(0)+"%",10,'Verdana')+5.7 ) - (133+8) ) / 2 : ttr
        }) 
       .attr("y",function(d){ 
           ttr = dict_leaf_y[label_names.length] - 15
           if(default_colors.length > 5){
               ttr = -20
           }
-          return (d.children || d._children) || version2 ? -87 : ttr;
+          return (d.children || d._children) || version2 ? -90 : ttr;
 
         })
       .attr("dy", ".35em")
       .attr("text-anchor", "start" )
-      .style("font-size","12px")
+      .style("font-size","11px")
       .style("font-family","Verdana")
       .style("stroke","#535353")
       .style("stroke-width","0.05em")
@@ -303,7 +303,7 @@ function update(source,n_labels) {
        })  
       .attr("y",function(d){
           if(!d.name.match(/(.*?)(<|>|=|!=|<=|>=|=<|=>)/i)) return -68
-          else return d.name.match(/(.*?)(<|>|=|!=|<=|>=|=<|=>)/i)[1] == 'Root '  ?  -55 : -65 
+          else return d.name.match(/(.*?)(<|>|=|!=|<=|>=|=<|=>)/i)[1] == 'Root '  ?  -55 : -70 
         })
       .attr("dy", ".40em")
       .attr("text-anchor", "start" )
@@ -330,19 +330,31 @@ function update(source,n_labels) {
 
 
       nodeEnter.append("text")
-      .attr("x", function(d) { return (d.children || d._children) || version2 ? -75 - ( ( getTextWidth(d.name.replace(d.name.match(/(.*?)(<|>|=|!=|<=|>=|=<|=>)/i)[1],'').replace('=',''),14,'Verdana')+5.7 ) - (133+8) ) / 2 :0}) 
+      .attr("x", function(d) { return (d.children || d._children) || version2 ? -70 - (( getTextWidth(d.name.replace(d.name.match(/(.*?)(<|>|=|!=|<=|>=|=<|=>)/i)[1],'').replace('=',''),14,'Verdana')+5.7 ) - (133+8) ) / 2 :0}) 
       .attr("y",-40)
       .attr("dy", ".35em")
       .attr("text-anchor", "start" )
-      .style("font-size","12px")
+      .style("font-size","11px")
       .style("font-family","Verdana")
       .style("stroke","black")
       .style("stroke-width","0.04em")
       .text(function(d) { 
         
-          var toreturn =  (d.children || d._children) || version2 ? d.name.replace(d.name.match(/(.*?)(<|>|=|!=|<=|>=|=<|=>)/i)[1],'').replace('!=','not').replace(/=|\!=/g,'').replace('<','<=') : ""; 
-          if(!d.name.match(/(.*?)(<|>|=|!=|<=|>=|=<|=>)/i)) return toreturn
-          return d.name.match(/(.*?)(<|>|=|!=|<=|>=|=<|=>)/i)[1] == 'Root '  ?  '' : toreturn
+          var toreturn =  (d.children || d._children) || version2 ? d.name.replace(d.name.match(/(.*?)(<|>|=|!=|<=|>=|=<|=>)/i)[1],'').replace('!=','not').replace(/=|\!=/g,'').replace('<','False').replace('0.5','') : ""; 
+          var positivereturn =  (d.children || d._children) || version2 ? d.name.replace(d.name.match(/(.*?)(<|>|=|!=|<=|>=|=<|=>)/i)[1],'').replace('=','is').replace(/=|\!=/g,'').replace('>','True').replace('0.5','') : "";
+//          var comparisonvalue =  (d.children || d._children) || version2 ? d.name.replace(d.name.match(/(.*?)(<|>|=|!=|<=|>=|=<|=>)(\d.*)/i)[2],'').replace('\','is') : "";
+
+          if(d.name.match(/(.*?)(<|!=|<=|=<)/i)){
+              return toreturn
+          } 
+          else if(d.name.match(/(.*?)(>|=|>=|=>)/i)){
+              return positivereturn
+          }
+          
+//         if(d.name.match(/(.*?)(<|>|=|!=|<=|>=|=<|=>)/i)[1] == 'Root '){
+//             return d.name.match(/(.*?)(<|>|=|!=|<=|>=|=<|=>)/i)[1] == 'Root '  ?  '' : toreturn
+//         }
+//          else return d.name.match(/(.*?)(<|>|=|!=|<=|>=|=<|=>)/i)[1] == 'Root '  ?  '' : toreturn
       })
 
 
